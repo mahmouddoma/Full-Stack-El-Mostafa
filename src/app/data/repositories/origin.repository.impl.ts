@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { Observable, catchError, map } from 'rxjs';
 import { IOriginRepository } from '../../domain/repositories/i-origin.repository';
 import { Origin } from '../../domain/models/origin.model';
 import { OriginMapper } from '../mappers/origin.mapper';
@@ -14,6 +14,9 @@ export class OriginRepositoryImpl implements IOriginRepository {
   private readonly url = `${API_V1_BASE_URL}/origins`;
 
   getOrigins(): Observable<Origin[]> {
-    return this.http.get<any[]>(this.url).pipe(map((origins) => origins.map((o) => OriginMapper.fromJson(o))));
+    return this.http.get<any[]>(this.url).pipe(
+      catchError(() => this.http.get<{ origins: any[] }>('assets/data.json').pipe(map((data) => data.origins))),
+      map((origins) => origins.map((o) => OriginMapper.fromJson(o))),
+    );
   }
 }

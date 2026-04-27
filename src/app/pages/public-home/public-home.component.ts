@@ -64,6 +64,7 @@ export class PublicHomeComponent implements AfterViewInit, OnDestroy {
   private selectedEditorElement: HTMLElement | null = null;
   private domObserver?: MutationObserver;
   private isApplyingOverrides = false;
+  private isRefreshQueued = false;
   private readonly windowFocusHandler = () => {
     this.refreshPublicContent();
   };
@@ -196,9 +197,17 @@ export class PublicHomeComponent implements AfterViewInit, OnDestroy {
       return;
     }
 
-    this.siteContent.refreshContent();
-    this.languageService.refreshRemoteContent();
-    this.visualEditor.refreshOverrides();
+    if (this.isRefreshQueued) {
+      return;
+    }
+
+    this.isRefreshQueued = true;
+    queueMicrotask(() => {
+      this.isRefreshQueued = false;
+      this.siteContent.refreshContent();
+      this.languageService.refreshRemoteContent();
+      this.visualEditor.refreshOverrides();
+    });
   }
 
   private syncEditorLocale(locale: Language): void {

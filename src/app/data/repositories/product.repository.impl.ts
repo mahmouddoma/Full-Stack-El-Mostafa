@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { Observable, catchError, map } from 'rxjs';
 import { IProductRepository } from '../../domain/repositories/i-product.repository';
 import { Product } from '../../domain/models/product.model';
 import { ProductMapper } from '../mappers/product.mapper';
@@ -14,7 +14,10 @@ export class ProductRepositoryImpl implements IProductRepository {
   private readonly url = `${API_V1_BASE_URL}/products`;
   
   getProducts(): Observable<Product[]> {
-    return this.http.get<any[]>(this.url).pipe(map((products) => products.map((p) => ProductMapper.fromJson(p))));
+    return this.http.get<any[]>(this.url).pipe(
+      catchError(() => this.http.get<{ products: any[] }>('assets/data.json').pipe(map((data) => data.products))),
+      map((products) => products.map((p) => ProductMapper.fromJson(p))),
+    );
   }
 
   getProductById(id: string): Observable<Product | undefined> {

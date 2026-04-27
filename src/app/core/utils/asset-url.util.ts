@@ -8,14 +8,16 @@ const ASSET_FIELDS = new Set(['url', 'imageUrl', 'coverImageUrl']);
 export function resolveAssetUrl(value: string | null | undefined): string {
   const normalized = String(value ?? '').trim();
 
-  if (!normalized) {
-    return '';
+  if (!normalized || normalized === '/') {
+    return normalized;
   }
 
   if (
     normalized.startsWith('//') ||
     normalized.startsWith('data:') ||
-    normalized.startsWith('blob:')
+    normalized.startsWith('blob:') ||
+    normalized.startsWith('http://') ||
+    normalized.startsWith('https://')
   ) {
     return normalized;
   }
@@ -23,39 +25,18 @@ export function resolveAssetUrl(value: string | null | undefined): string {
   if (normalized.startsWith('assets/')) {
     return normalized;
   }
-
-  if (normalized.startsWith('./assets/')) {
-    return normalized.replace(/^\./, '');
-  }
-
-  if (normalized.startsWith('http://') || normalized.startsWith('https://')) {
-    try {
-      const parsed = new URL(normalized);
-
-      if (
-        parsed.pathname.startsWith('/uploads/') &&
-        LOCAL_HOSTNAMES.has(parsed.hostname) &&
-        !LOCAL_HOSTNAMES.has(API_URL.hostname)
-      ) {
-        return `${API_ORIGIN}${parsed.pathname}${parsed.search}${parsed.hash}`;
-      }
-
-      return normalized;
-    } catch {
-      return normalized;
-    }
-  }
-
   if (normalized.startsWith('/assets/')) {
     return normalized.substring(1);
   }
-
-  if (normalized.startsWith('/')) {
-    return `${API_ORIGIN}${normalized}`;
+  if (normalized.startsWith('./assets/')) {
+    return normalized.substring(2);
   }
 
   if (normalized.startsWith('uploads/')) {
     return `${API_ORIGIN}/${normalized}`;
+  }
+  if (normalized.startsWith('/uploads/')) {
+    return `${API_ORIGIN}${normalized}`;
   }
 
   return normalized;
@@ -68,34 +49,12 @@ export function toStoredAssetUrl(value: string | null | undefined): string {
     return '';
   }
 
-  if (normalized.startsWith('assets/')) {
-    return normalized;
+  if (normalized.startsWith('assets/') || normalized.startsWith('/assets/')) {
+    return normalized.startsWith('/') ? normalized : `/${normalized}`;
   }
 
-  if (normalized.startsWith('./assets/')) {
-    return normalized.replace(/^\./, '');
-  }
-
-  if (normalized.startsWith('/uploads/')) {
-    return normalized;
-  }
-
-  if (normalized.startsWith('uploads/')) {
-    return normalized;
-  }
-
-  if (normalized.startsWith('http://') || normalized.startsWith('https://')) {
-    try {
-      const parsed = new URL(normalized);
-
-      if (parsed.pathname.startsWith('/uploads/')) {
-        return `${parsed.pathname}${parsed.search}${parsed.hash}`;
-      }
-
-      return normalized;
-    } catch {
-      return normalized;
-    }
+  if (normalized.startsWith('uploads/') || normalized.startsWith('/uploads/')) {
+    return normalized.startsWith('/') ? normalized : `/${normalized}`;
   }
 
   return normalized;

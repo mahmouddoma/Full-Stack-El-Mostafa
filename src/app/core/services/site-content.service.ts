@@ -209,29 +209,41 @@ export class SiteContentService {
 
     return {
       navbar: {
-        about: { ...DEFAULT_CONTENT.navbar.about, ...(navbar?.about ?? {}) },
-        products: { ...DEFAULT_CONTENT.navbar.products, ...(navbar?.products ?? {}) },
-        origins: { ...DEFAULT_CONTENT.navbar.origins, ...(navbar?.origins ?? {}) },
-        catalog: { ...DEFAULT_CONTENT.navbar.catalog, ...(navbar?.catalog ?? {}) },
-        blog: { ...DEFAULT_CONTENT.navbar.blog, ...(navbar?.blog ?? {}) },
-        quote: { ...DEFAULT_CONTENT.navbar.quote, ...(navbar?.quote ?? {}) },
-        contact: { ...DEFAULT_CONTENT.navbar.contact, ...(navbar?.contact ?? {}) },
-        adminLink: { ...DEFAULT_CONTENT.navbar.adminLink, ...(navbar?.adminLink ?? {}) },
+        about: this.mergeLocalizedText(DEFAULT_CONTENT.navbar.about, navbar?.about),
+        products: this.mergeLocalizedText(DEFAULT_CONTENT.navbar.products, navbar?.products),
+        origins: this.mergeLocalizedText(DEFAULT_CONTENT.navbar.origins, navbar?.origins),
+        catalog: this.mergeLocalizedText(DEFAULT_CONTENT.navbar.catalog, navbar?.catalog),
+        blog: this.mergeLocalizedText(DEFAULT_CONTENT.navbar.blog, navbar?.blog),
+        quote: this.mergeLocalizedText(DEFAULT_CONTENT.navbar.quote, navbar?.quote),
+        contact: this.mergeLocalizedText(DEFAULT_CONTENT.navbar.contact, navbar?.contact),
+        adminLink: this.mergeLocalizedText(DEFAULT_CONTENT.navbar.adminLink, navbar?.adminLink),
       },
       hero: {
-        eyebrow: { ...DEFAULT_CONTENT.hero.eyebrow, ...(hero?.eyebrow ?? {}) },
-        title: { ...DEFAULT_CONTENT.hero.title, ...(hero?.title ?? {}) },
-        subtitle: { ...DEFAULT_CONTENT.hero.subtitle, ...(hero?.subtitle ?? {}) },
-        cta: { ...DEFAULT_CONTENT.hero.cta, ...(hero?.cta ?? {}) },
+        eyebrow: this.mergeLocalizedText(DEFAULT_CONTENT.hero.eyebrow, hero?.eyebrow),
+        title: this.mergeLocalizedText(DEFAULT_CONTENT.hero.title, hero?.title),
+        subtitle: this.mergeLocalizedText(DEFAULT_CONTENT.hero.subtitle, hero?.subtitle),
+        cta: this.mergeLocalizedText(DEFAULT_CONTENT.hero.cta, hero?.cta),
       },
       footer: {
-        brandText: footer?.brandText ?? DEFAULT_CONTENT.footer.brandText,
-        description: { ...DEFAULT_CONTENT.footer.description, ...(footer?.description ?? {}) },
-        address: { ...DEFAULT_CONTENT.footer.address, ...(footer?.address ?? {}) },
-        email: footer?.email ?? DEFAULT_CONTENT.footer.email,
-        phone: footer?.phone ?? DEFAULT_CONTENT.footer.phone,
+        brandText: this.mergeString(DEFAULT_CONTENT.footer.brandText, footer?.brandText),
+        description: this.mergeLocalizedText(DEFAULT_CONTENT.footer.description, footer?.description),
+        address: this.mergeLocalizedText(DEFAULT_CONTENT.footer.address, footer?.address),
+        email: this.mergeString(DEFAULT_CONTENT.footer.email, footer?.email),
+        phone: this.mergeString(DEFAULT_CONTENT.footer.phone, footer?.phone),
       },
     };
+  }
+
+  private mergeLocalizedText(fallback: LocalizedText, value?: Partial<LocalizedText> | null): LocalizedText {
+    return {
+      en: this.mergeString(fallback.en, value?.en),
+      ar: this.mergeString(fallback.ar, value?.ar),
+    };
+  }
+
+  private mergeString(fallback: string, value?: string | null): string {
+    const normalized = String(value ?? '').trim();
+    return normalized ? value as string : fallback;
   }
 
   private loadContent(): LocalizedSiteContent {

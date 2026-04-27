@@ -1,6 +1,5 @@
 import { Component, HostListener, OnInit, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { trigger, transition, style, animate, query, stagger } from '@angular/animations';
 import { AnimationService } from '../../core/services/animation.service';
 import { LanguageService } from '../../core/services/language.service';
 import { SiteContentService } from '../../core/services/site-content.service';
@@ -21,7 +20,7 @@ interface FloatingFruit {
   standalone: true,
   imports: [CommonModule],
   template: `
-    <section class="hero-section" id="home" [@heroEntry]>
+    <section class="hero-section" id="home">
       <!-- Glowing Mouse Tracker Orb -->
       <div
         class="hero-orb"
@@ -396,25 +395,6 @@ interface FloatingFruit {
         }
       }
     `,
-  ],
-  animations: [
-    trigger('heroEntry', [
-      transition(':enter', [
-        query(
-          '.stagger-item',
-          [
-            style({ opacity: 0, filter: 'blur(10px)', transform: 'translateY(60px)' }),
-            stagger(150, [
-              animate(
-                '1.2s cubic-bezier(0.16, 1, 0.3, 1)',
-                style({ opacity: 1, filter: 'blur(0)', transform: 'translateY(0)' }),
-              ),
-            ]),
-          ],
-          { optional: true },
-        ),
-      ]),
-    ]),
   ],
 })
 export class HeroComponent implements OnInit {

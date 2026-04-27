@@ -146,7 +146,7 @@ interface Particle {
             p.currentScale +
             ')'
           "
-          [style.filter]="'blur(' + p.currentBlur + 'px) contrast(1.2)'"
+          [style.filter]="'contrast(1.18) saturate(1.12) brightness(1.04)'"
           [style.opacity]="p.currentOpacity"
         >
           <img
@@ -284,6 +284,8 @@ interface Particle {
       }
       .particle img {
         object-fit: contain;
+        image-rendering: auto;
+        transform: translateZ(0);
       }
       .particle.juice img {
         width: 140px;
@@ -450,7 +452,7 @@ export class FruitSliceComponent implements OnInit, AfterViewInit {
 
       // Opacity peaks instantly then fades out
       p.currentOpacity = ease > 0.7 ? 1 - (ease - 0.7) * 3.3 : ease * 3 > 1 ? 1 : ease * 3;
-      p.currentBlur = p.zDepth * 10 * ease; // Parallax blur mapped to depth
+      p.currentBlur = 0;
     });
   }
 

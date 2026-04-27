@@ -47,7 +47,9 @@ export class VisualEditorService {
         this.overrides.set(this.mapOverrides(overrides));
         this.persistLocal();
       },
-      error: () => undefined,
+      error: () => {
+        this.overrides.set(this.loadOverrides());
+      },
     });
   }
 
@@ -223,6 +225,10 @@ export class VisualEditorService {
 
   private mapOverrides(overrides: VisualOverride[]): Record<string, EditorOverride> {
     return overrides.reduce<Record<string, EditorOverride>>((acc, override) => {
+      if (!this.hasUsableValue(override.value)) {
+        return acc;
+      }
+
       acc[this.makeKey(override.nodeId, override.scope as EditorValueScope)] = {
         nodeId: override.nodeId,
         type: override.type as EditorValueType,
@@ -249,10 +255,21 @@ export class VisualEditorService {
     }
 
     try {
-      return JSON.parse(raw) as Record<string, EditorOverride>;
+      const parsed = JSON.parse(raw) as Record<string, EditorOverride>;
+      return Object.entries(parsed).reduce<Record<string, EditorOverride>>((acc, [key, override]) => {
+        if (override && this.hasUsableValue(override.value)) {
+          acc[key] = override;
+        }
+
+        return acc;
+      }, {});
     } catch {
       return {};
     }
+  }
+
+  private hasUsableValue(value: string | null | undefined): boolean {
+    return String(value ?? '').trim().length > 0;
   }
 
   private persistLocal(): void {

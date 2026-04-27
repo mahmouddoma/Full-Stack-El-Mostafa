@@ -1299,6 +1299,9 @@ export class LanguageService {
       next: (content) => {
         this.remoteContent.set(repairDeepText(content));
       },
+      error: () => {
+        this.remoteContent.set(null);
+      },
     });
   }
 
