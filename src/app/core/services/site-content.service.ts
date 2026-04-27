@@ -1,0 +1,261 @@
+import { Injectable, inject, signal } from '@angular/core';
+import { SiteContentApiService } from './site-content-api.service';
+import { SiteContent } from '../models/site-content.model';
+import { repairDeepText, repairText } from '../utils/text-normalizer.util';
+import { readLocalStorage, writeLocalStorage } from '../utils/browser-storage.util';
+
+export type EditableLocale = 'en' | 'ar';
+
+interface LocalizedText {
+  en: string;
+  ar: string;
+}
+
+export interface LocalizedSiteContent {
+  navbar: {
+    about: LocalizedText;
+    products: LocalizedText;
+    origins: LocalizedText;
+    catalog: LocalizedText;
+    blog: LocalizedText;
+    quote: LocalizedText;
+    contact: LocalizedText;
+    adminLink: LocalizedText;
+  };
+  hero: {
+    eyebrow: LocalizedText;
+    title: LocalizedText;
+    subtitle: LocalizedText;
+    cta: LocalizedText;
+  };
+  footer: {
+    brandText: string;
+    description: LocalizedText;
+    address: LocalizedText;
+    email: string;
+    phone: string;
+  };
+}
+
+const DEFAULT_CONTENT: LocalizedSiteContent = {
+  navbar: {
+    about: { en: 'About', ar: 'عنّا' },
+    products: { en: 'Products', ar: 'منتجاتنا' },
+    origins: { en: 'Origins', ar: 'المصادر' },
+    catalog: { en: 'Catalog', ar: 'الكتالوج' },
+    blog: { en: 'Blog', ar: 'المدونة' },
+    quote: { en: 'Request Quote', ar: 'اطلب عرض سعر' },
+    contact: { en: 'Contact', ar: 'تواصل معنا' },
+    adminLink: { en: 'Admin Login', ar: 'دخول الأدمن' },
+  },
+  hero: {
+    eyebrow: { en: 'PREMIUM FRUIT IMPORTERS', ar: 'مستوردو كبار الفواكه الفاخرة' },
+    title: { en: 'EL MOSTAFA', ar: 'المصطفى' },
+    subtitle: {
+      en: "Cairo's leading importer of premium tropical and exotic fruits. Sourced globally, delivered fresh.",
+      ar: 'المستورد الرائد للفواكه الاستوائية والغريبة الفاخرة في القاهرة. مستوردة عالميًا، ومسلّمة طازجة.',
+    },
+    cta: { en: 'EXPLORE PRODUCTS', ar: 'استكشف منتجاتنا' },
+  },
+  footer: {
+    brandText: 'EL MOSTAFA',
+    description: {
+      en: 'Premium quality fruit importers serving Cairo with the finest selection from around the globe since 2010.',
+      ar: 'مستوردو فواكه بجودة عالية نخدم القاهرة بأفضل الاختيارات من جميع أنحاء العالم منذ عام 2010.',
+    },
+    address: {
+      en: 'Cairo, Egypt',
+      ar: 'القاهرة، مصر',
+    },
+    email: 'contact@elmostafafruits.com',
+    phone: '+20 100 000 0000',
+  },
+};
+
+@Injectable({
+  providedIn: 'root',
+})
+export class SiteContentService {
+  private readonly siteContentApi = inject(SiteContentApiService);
+  private readonly STORAGE_KEY = 'elmostafa_mock_site_content_v1';
+  readonly content = signal<LocalizedSiteContent>(this.loadContent());
+
+  constructor() {
+    window.addEventListener('storage', (event) => {
+      if (event.key === this.STORAGE_KEY) {
+        this.content.set(this.loadContent());
+      }
+    });
+
+    this.refreshContent(false);
+  }
+
+  getNavbarLabel(key: keyof LocalizedSiteContent['navbar'], locale: EditableLocale): string {
+    return repairText(this.content().navbar[key][locale]);
+  }
+
+  getHeroValue(key: keyof LocalizedSiteContent['hero'], locale: EditableLocale): string {
+    return repairText(this.content().hero[key][locale]);
+  }
+
+  getFooterValue(key: keyof LocalizedSiteContent['footer'], locale: EditableLocale): string {
+    const value = this.content().footer[key];
+
+    if (typeof value === 'string') {
+      return repairText(value);
+    }
+
+    return repairText(value[locale]);
+  }
+
+  getValue(nodeId: string, locale: EditableLocale): string {
+    const [section, field] = nodeId.split('.');
+    const state = this.content();
+
+    if (section === 'navbar' && field in state.navbar) {
+      return repairText(state.navbar[field as keyof LocalizedSiteContent['navbar']][locale]);
+    }
+
+    if (section === 'hero' && field in state.hero) {
+      return repairText(state.hero[field as keyof LocalizedSiteContent['hero']][locale]);
+    }
+
+    if (section === 'footer' && field in state.footer) {
+      const footerValue = state.footer[field as keyof LocalizedSiteContent['footer']];
+      return repairText(typeof footerValue === 'string' ? footerValue : footerValue[locale]);
+    }
+
+    return '';
+  }
+
+  setValue(nodeId: string, locale: EditableLocale, value: string): void {
+    const [section, field] = nodeId.split('.');
+    const state = this.content();
+
+    if (section === 'navbar' && field in state.navbar) {
+      this.content.update((current) => ({
+        ...current,
+        navbar: {
+          ...current.navbar,
+          [field as keyof LocalizedSiteContent['navbar']]: {
+            ...current.navbar[field as keyof LocalizedSiteContent['navbar']],
+            [locale]: value,
+          },
+        },
+      }));
+      this.persist();
+      return;
+    }
+
+    if (section === 'hero' && field in state.hero) {
+      this.content.update((current) => ({
+        ...current,
+        hero: {
+          ...current.hero,
+          [field as keyof LocalizedSiteContent['hero']]: {
+            ...current.hero[field as keyof LocalizedSiteContent['hero']],
+            [locale]: value,
+          },
+        },
+      }));
+      this.persist();
+      return;
+    }
+
+    if (section === 'footer' && field in state.footer) {
+      const footerValue = state.footer[field as keyof LocalizedSiteContent['footer']];
+
+      if (typeof footerValue === 'string') {
+        this.content.update((current) => ({
+          ...current,
+          footer: {
+            ...current.footer,
+            [field as keyof LocalizedSiteContent['footer']]: value,
+          },
+        }));
+      } else {
+        this.content.update((current) => ({
+          ...current,
+          footer: {
+            ...current.footer,
+            [field as keyof LocalizedSiteContent['footer']]: {
+              ...(current.footer[field as keyof LocalizedSiteContent['footer']] as LocalizedText),
+              [locale]: value,
+            },
+          },
+        }));
+      }
+
+      this.persist();
+    }
+  }
+
+  refreshContent(forceFresh = true): void {
+    this.siteContentApi.getContent(forceFresh).subscribe({
+      next: (content) => {
+        this.content.set(
+          repairDeepText(this.mergeContent(content as unknown as Partial<LocalizedSiteContent>)),
+        );
+        this.persistLocal();
+      },
+      error: () => undefined,
+    });
+  }
+
+  private mergeContent(content?: Partial<LocalizedSiteContent> | null): LocalizedSiteContent {
+    const navbar = content?.navbar;
+    const hero = content?.hero;
+    const footer = content?.footer;
+
+    return {
+      navbar: {
+        about: { ...DEFAULT_CONTENT.navbar.about, ...(navbar?.about ?? {}) },
+        products: { ...DEFAULT_CONTENT.navbar.products, ...(navbar?.products ?? {}) },
+        origins: { ...DEFAULT_CONTENT.navbar.origins, ...(navbar?.origins ?? {}) },
+        catalog: { ...DEFAULT_CONTENT.navbar.catalog, ...(navbar?.catalog ?? {}) },
+        blog: { ...DEFAULT_CONTENT.navbar.blog, ...(navbar?.blog ?? {}) },
+        quote: { ...DEFAULT_CONTENT.navbar.quote, ...(navbar?.quote ?? {}) },
+        contact: { ...DEFAULT_CONTENT.navbar.contact, ...(navbar?.contact ?? {}) },
+        adminLink: { ...DEFAULT_CONTENT.navbar.adminLink, ...(navbar?.adminLink ?? {}) },
+      },
+      hero: {
+        eyebrow: { ...DEFAULT_CONTENT.hero.eyebrow, ...(hero?.eyebrow ?? {}) },
+        title: { ...DEFAULT_CONTENT.hero.title, ...(hero?.title ?? {}) },
+        subtitle: { ...DEFAULT_CONTENT.hero.subtitle, ...(hero?.subtitle ?? {}) },
+        cta: { ...DEFAULT_CONTENT.hero.cta, ...(hero?.cta ?? {}) },
+      },
+      footer: {
+        brandText: footer?.brandText ?? DEFAULT_CONTENT.footer.brandText,
+        description: { ...DEFAULT_CONTENT.footer.description, ...(footer?.description ?? {}) },
+        address: { ...DEFAULT_CONTENT.footer.address, ...(footer?.address ?? {}) },
+        email: footer?.email ?? DEFAULT_CONTENT.footer.email,
+        phone: footer?.phone ?? DEFAULT_CONTENT.footer.phone,
+      },
+    };
+  }
+
+  private loadContent(): LocalizedSiteContent {
+    const raw = readLocalStorage(this.STORAGE_KEY);
+
+    if (!raw) {
+      return repairDeepText(this.mergeContent());
+    }
+
+    try {
+      return repairDeepText(this.mergeContent(JSON.parse(raw) as Partial<LocalizedSiteContent>));
+    } catch {
+      return repairDeepText(this.mergeContent());
+    }
+  }
+
+  private persist(): void {
+    this.persistLocal();
+    this.siteContentApi.updateContent(this.content() as unknown as SiteContent).subscribe({
+      error: () => undefined,
+    });
+  }
+
+  private persistLocal(): void {
+    writeLocalStorage(this.STORAGE_KEY, JSON.stringify(repairDeepText(this.content())));
+  }
+}
