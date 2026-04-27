@@ -1,0 +1,137 @@
+{
+  "products": [
+    {
+      "id": "1",
+      "name": "Premium Apples",
+      "name_ar": "تفاح فاخر",
+      "imageUrl": "assets/real-apple.png",
+      "imageFilter": "none",
+      "origin": ["Italy", "Poland", "Greece"],
+      "varieties": ["Gala", "Red Delicious", "Golden", "Eda Red", "Nida Red"],
+      "description": "Exquisite selection of crisp, premium apples from the heart of European orchards.",
+      "description_ar": "تشكيلة رائعة من التفاح الفاخر والمقرمش من قلب بساتين أوروبا.",
+      "category": "stone"
+    },
+    {
+      "id": "2",
+      "name": "Fresh Kiwi",
+      "name_ar": "كيوي طازج",
+      "imageUrl": "assets/real-kiwi.png",
+      "imageFilter": "none",
+      "origin": ["Greece", "Italy"],
+      "varieties": ["Hayward"],
+      "description": "Hand-picked, vibrant green kiwifruit with a perfect balance of sweetness and tang.",
+      "description_ar": "ثمار الكيوي الخضراء النابضة بالحياة، منتقاة يدوياً بتوازن مثالي بين الحلاوة والحموضة.",
+      "category": "exotic"
+    },
+    {
+      "id": "3",
+      "name": "Hass Avocado",
+      "name_ar": "أفوكادو هاس",
+      "imageUrl": "assets/real-avocado.png",
+      "imageFilter": "none",
+      "origin": ["Kenya"],
+      "varieties": ["Hass"],
+      "description": "Rich, creamy, and nutty avocados sourced from sustainable Kenyan farms.",
+      "description_ar": "أفوكادو غني، كريمي، وذو نكهة جوزية مميزة، مستورد من مزارع كينيا المستدامة.",
+      "category": "exotic"
+    },
+    {
+      "id": "4",
+      "name": "Sweet Cherries",
+      "name_ar": "كرز حلو",
+      "imageUrl": "assets/real-cherry.png",
+      "imageFilter": "none",
+      "origin": ["Greece", "Italy"],
+      "varieties": ["Bing"],
+      "description": "Dark, succulent cherries bursting with seasonal sweetness.",
+      "description_ar": "كرز داكن وناضج ينبض بحلاوة الموسم.",
+      "category": "stone"
+    },
+    {
+      "id": "5",
+      "name": "Gold Pineapples",
+      "name_ar": "أناناس ذهبي",
+      "imageUrl": "assets/real-pineapple.png",
+      "imageFilter": "none",
+      "origin": ["Costa Rica", "Malaysia"],
+      "varieties": ["MD2"],
+      "description": "Golden, honey-sweet pineapples directly from tropical paradises.",
+      "description_ar": "أناناس ذهبي بحلاوة العسل مستورد مباشرة من الجنات الاستوائية.",
+      "category": "exotic"
+    },
+    {
+      "id": "6",
+      "name": "Premium Bananas",
+      "name_ar": "موز فاخر",
+      "imageUrl": "assets/real-banana.png",
+      "imageFilter": "none",
+      "origin": ["Ecuador"],
+      "description": "The perfect tropical snack: creamy and naturally sweet bananas from Ecuador.",
+      "description_ar": "الوجبة الاستوائية المثالية: موز كريمي وحلو طبيعياً من الإكوادور.",
+      "category": "exotic"
+    },
+    {
+      "id": "7",
+      "name": "Italian Plums",
+      "name_ar": "برقوق إيطالي",
+      "imageUrl": "assets/real-plum.png",
+      "imageFilter": "none",
+      "origin": ["Italy"],
+      "description": "Deep purple, juicy plums with a rich, velvety texture.",
+      "description_ar": "برقوق أرجواني داكن وعصاري ذو ملمس مخملي غني.",
+      "category": "stone"
+    },
+    {
+      "id": "8",
+      "name": "Sun-Kissed Peaches",
+      "name_ar": "خوخ مشمس",
+      "imageUrl": "assets/real-peach.png",
+      "imageFilter": "none",
+      "origin": ["Italy"],
+      "description": "Sweet, fragrant, and perfectly ripe peaches from the Italian sun.",
+      "description_ar": "خوخ حلو، عطري، وناضج تماماً تحت شمس إيطاليا.",
+      "category": "stone"
+    }
+  ],
+  "origins": [
+    {
+      "flag": "🇮🇹",
+      "country": "Italy",
+      "country_ar": "إيطاليا",
+      "products": [
+        "Premium Apples",
+        "Fresh Kiwi",
+        "Sweet Cherries",
+        "Italian Plums",
+        "Sun-Kissed Peaches"
+      ]
+    },
+    { "flag": "🇵🇱", "country": "Poland", "country_ar": "بولندا", "products": ["Premium Apples"] },
+    {
+      "flag": "🇬🇷",
+      "country": "Greece",
+      "country_ar": "اليونان",
+      "products": ["Premium Apples", "Fresh Kiwi", "Sweet Cherries"]
+    },
+    { "flag": "🇰🇪", "country": "Kenya", "country_ar": "كينيا", "products": ["Hass Avocado"] },
+    {
+      "flag": "🇨🇷",
+      "country": "Costa Rica",
+      "country_ar": "كوستاريكا",
+      "products": ["Gold Pineapples"]
+    },
+    {
+      "flag": "🇲🇾",
+      "country": "Malaysia",
+      "country_ar": "ماليزيا",
+      "products": ["Gold Pineapples"]
+    },
+    {
+      "flag": "🇪🇨",
+      "country": "Ecuador",
+      "country_ar": "الإكوادور",
+      "products": ["Premium Bananas"]
+    }
+  ]
+}
