@@ -21,7 +21,7 @@ export function resolveAssetUrl(value: string | null | undefined): string {
   }
 
   if (normalized.startsWith('assets/')) {
-    return `/${normalized}`;
+    return normalized;
   }
 
   if (normalized.startsWith('./assets/')) {
@@ -47,7 +47,7 @@ export function resolveAssetUrl(value: string | null | undefined): string {
   }
 
   if (normalized.startsWith('/assets/')) {
-    return normalized;
+    return normalized.substring(1);
   }
 
   if (normalized.startsWith('/')) {
@@ -69,7 +69,7 @@ export function toStoredAssetUrl(value: string | null | undefined): string {
   }
 
   if (normalized.startsWith('assets/')) {
-    return `/${normalized}`;
+    return normalized;
   }
 
   if (normalized.startsWith('./assets/')) {
@@ -81,7 +81,7 @@ export function toStoredAssetUrl(value: string | null | undefined): string {
   }
 
   if (normalized.startsWith('uploads/')) {
-    return `/${normalized}`;
+    return normalized;
   }
 
   if (normalized.startsWith('http://') || normalized.startsWith('https://')) {

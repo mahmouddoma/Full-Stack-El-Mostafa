@@ -666,7 +666,7 @@ export class NavbarComponent implements OnDestroy {
   readonly settings = inject(SiteSettingsService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
-  readonly fallbackLogo = '/assets/logo.png';
+  readonly fallbackLogo = 'assets/logo.png';
   readonly brokenLogoUrl = signal<string | null>(null);
   readonly requestedLogoUrl = computed(
     () => resolveAssetUrl(this.settings.getValue('brand.logo', '') || this.fallbackLogo),
