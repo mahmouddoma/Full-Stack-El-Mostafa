@@ -24,7 +24,6 @@ import { ContactNewsletterComponent } from '../contact-newsletter/contact-newsle
 import { FooterComponent } from '../footer/footer.component';
 import { LanguageService, Language } from '../../core/services/language.service';
 import { SiteContentService } from '../../core/services/site-content.service';
-import { VisualEditorService } from '../../core/services/visual-editor.service';
 
 @Component({
   selector: 'app-public-home',
@@ -62,8 +61,6 @@ import { VisualEditorService } from '../../core/services/visual-editor.service';
 export class PublicHomeComponent implements AfterViewInit, OnDestroy {
   private isBrowser: boolean;
   private selectedEditorElement: HTMLElement | null = null;
-  private domObserver?: MutationObserver;
-  private isApplyingOverrides = false;
   private isRefreshQueued = false;
   private readonly windowFocusHandler = () => {
     this.refreshPublicContent();
@@ -86,23 +83,8 @@ export class PublicHomeComponent implements AfterViewInit, OnDestroy {
     private readonly route: ActivatedRoute,
     private readonly languageService: LanguageService,
     private readonly siteContent: SiteContentService,
-    private readonly visualEditor: VisualEditorService,
   ) {
     this.isBrowser = isPlatformBrowser(platformId);
-
-    effect(() => {
-      const locale = this.languageService.currentLang();
-      this.languageService.remoteContent();
-      this.visualEditor.overrides();
-
-      if (!this.isBrowser) {
-        return;
-      }
-
-      queueMicrotask(() => {
-        this.applyOverridesSafely(locale);
-      });
-    });
 
     effect(() => {
       const locale = this.languageService.currentLang();
@@ -132,7 +114,6 @@ export class PublicHomeComponent implements AfterViewInit, OnDestroy {
       if (this.isBrowser) {
         document.body.classList.toggle('editor-preview', editor);
         this.refreshPublicContent();
-        queueMicrotask(() => this.applyOverridesSafely(this.languageService.currentLang()));
       }
     });
 
@@ -152,19 +133,6 @@ export class PublicHomeComponent implements AfterViewInit, OnDestroy {
       document.addEventListener('submit', this.editorCaptureSubmitHandler, true);
       window.addEventListener('focus', this.windowFocusHandler);
       document.addEventListener('visibilitychange', this.visibilityChangeHandler);
-
-      this.domObserver = new MutationObserver(() => {
-        if (this.isApplyingOverrides) {
-          return;
-        }
-
-        this.applyOverridesSafely(this.languageService.currentLang());
-      });
-
-      this.domObserver.observe(document.body, {
-        childList: true,
-        subtree: true,
-      });
     }
   }
 
@@ -176,20 +144,6 @@ export class PublicHomeComponent implements AfterViewInit, OnDestroy {
       window.removeEventListener('focus', this.windowFocusHandler);
       document.removeEventListener('visibilitychange', this.visibilityChangeHandler);
     }
-
-    this.domObserver?.disconnect();
-  }
-
-  private applyOverridesSafely(locale: Language): void {
-    if (!this.isBrowser) {
-      return;
-    }
-
-    this.isApplyingOverrides = true;
-    this.visualEditor.applyOverrides(document, locale);
-    queueMicrotask(() => {
-      this.isApplyingOverrides = false;
-    });
   }
 
   private refreshPublicContent(): void {
@@ -206,7 +160,6 @@ export class PublicHomeComponent implements AfterViewInit, OnDestroy {
       this.isRefreshQueued = false;
       this.siteContent.refreshContent();
       this.languageService.refreshRemoteContent();
-      this.visualEditor.refreshOverrides();
     });
   }
 

@@ -1,7 +1,6 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { SiteContentApiService } from './site-content-api.service';
 import { SiteContent } from '../models/site-content.model';
-import { VisualEditorService } from './visual-editor.service';
 import { repairDeepText, repairText } from '../utils/text-normalizer.util';
 import { readLocalStorage, writeLocalStorage } from '../utils/browser-storage.util';
 
@@ -1325,26 +1324,7 @@ export class LanguageService {
     return newLang;
   }
 
-  private readonly visualEditor = inject(VisualEditorService);
-
-  private getOverrideValue(lang: Language, path: string): string | null {
-    const scopedOverride = this.visualEditor.overrides()[`${lang}::${path}`];
-    if (scopedOverride) {
-      return repairText(scopedOverride.value);
-    }
-
-    const globalOverride = this.visualEditor.overrides()[`global::${path}`];
-    return globalOverride ? repairText(globalOverride.value) : null;
-  }
-
   translateFor(lang: Language, path: string): any {
-    // 0. Try visual overrides first (if applicable to this path)
-    const override = this.getOverrideValue(lang, path);
-    if (override) {
-      return override;
-    }
-
-    // 1. Try remote content second
     const remote = this.remoteContent();
     if (remote) {
       const keys = path.split('.');
@@ -1363,7 +1343,6 @@ export class LanguageService {
       }
     }
 
-    // 2. Fallback to hardcoded translations
     const keys = path.split('.');
     let value = this.translations[lang];
     for (const key of keys) {
@@ -1386,19 +1365,6 @@ export class LanguageService {
 
   translateEditable(nodeId: string, translationPath?: string): string {
     const lang = this.currentLang();
-    const nodeOverride = this.getOverrideValue(lang, nodeId);
-
-    if (nodeOverride) {
-      return repairText(nodeOverride);
-    }
-
-    if (translationPath && translationPath !== nodeId) {
-      const pathOverride = this.getOverrideValue(lang, translationPath);
-      if (pathOverride) {
-        return repairText(pathOverride);
-      }
-    }
-
     return repairText(this.translateFor(lang, translationPath ?? nodeId));
   }
 }
