@@ -55,6 +55,22 @@ import { NewsletterApiService } from '../../core/services/newsletter-api.service
           </div>
 
           <div class="form-field">
+            <label data-edit-id="contact.typeLabel" data-edit-label="Contact Type Label">{{
+              lang.translateEditable('contact.typeLabel')
+            }}</label>
+            <div class="type-toggle" role="radiogroup">
+              <label class="type-option">
+                <input type="radio" formControlName="contactType" value="supplier" />
+                <span>{{ lang.translateEditable('contact.typeSupplier') }}</span>
+              </label>
+              <label class="type-option">
+                <input type="radio" formControlName="contactType" value="customer" />
+                <span>{{ lang.translateEditable('contact.typeCustomer') }}</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-field">
             <label
               data-edit-id="contact.subjectLabel"
               data-edit-label="Contact Subject Label"
@@ -208,6 +224,47 @@ import { NewsletterApiService } from '../../core/services/newsletter-api.service
         border-color: var(--color-primary);
       }
 
+      .type-toggle {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .type-option {
+        position: relative;
+        cursor: pointer;
+      }
+
+      .type-option input {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .type-option span {
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        background: var(--bg-surface);
+        color: var(--text-primary);
+        font-weight: 800;
+        text-transform: none;
+        letter-spacing: 0;
+        transition:
+          border-color 0.2s ease,
+          background 0.2s ease,
+          color 0.2s ease;
+      }
+
+      .type-option input:checked + span {
+        border-color: rgba(245, 124, 0, 0.75);
+        background: rgba(245, 124, 0, 0.14);
+        color: var(--color-primary);
+      }
+
       .error-text {
         font-size: 0.75rem;
         color: var(--color-accent);
@@ -288,6 +345,10 @@ import { NewsletterApiService } from '../../core/services/newsletter-api.service
         .panel {
           padding: 22px 18px;
         }
+
+        .type-toggle {
+          grid-template-columns: 1fr;
+        }
       }
     `,
   ],
@@ -314,6 +375,7 @@ export class ContactNewsletterComponent {
   readonly contactForm = this.fb.nonNullable.group({
     name: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
+    contactType: ['supplier', Validators.required],
     subject: ['', Validators.required],
     message: ['', Validators.required],
   });
@@ -328,10 +390,18 @@ export class ContactNewsletterComponent {
     }
 
     this.contactSaving.set(true);
-    this.messagesApi.submitMessage(this.contactForm.getRawValue()).subscribe({
+    const value = this.contactForm.getRawValue();
+    this.messagesApi.submitMessage({
+      name: value.name,
+      email: value.email,
+      contactType: value.contactType as 'supplier' | 'customer',
+      subject: value.subject,
+      message: `[${this.contactTypeLabel(value.contactType)}]\n${value.message}`,
+    }).subscribe({
       next: () => {
         this.contactStatusKey.set('success');
         this.contactForm.reset();
+        this.contactForm.controls.contactType.setValue('supplier');
         this.contactSaving.set(false);
       },
       error: () => {
@@ -363,5 +433,9 @@ export class ContactNewsletterComponent {
           this.newsletterSaving.set(false);
         },
       });
+  }
+
+  private contactTypeLabel(value: string): string {
+    return value === 'customer' ? 'Customer' : 'Supplier';
   }
 }

@@ -6,8 +6,19 @@ import { Category } from '../../core/models/category.model';
 import { CatalogProductsApiService } from '../../core/services/catalog-products-api.service';
 import { CategoriesApiService } from '../../core/services/categories-api.service';
 import { LanguageService } from '../../core/services/language.service';
+import { resolveAssetUrl } from '../../core/utils/asset-url.util';
 import { FooterComponent } from '../footer/footer.component';
 import { NavbarComponent } from '../navbar/navbar.component';
+
+interface CatalogCard {
+  id: string | number;
+  name: string;
+  shortDescription?: string;
+  categorySlug?: string;
+  categoryName?: string;
+  coverImageUrl?: string;
+  detailLink?: unknown[];
+}
 
 @Component({
   selector: 'app-catalog-list',
@@ -42,11 +53,15 @@ import { NavbarComponent } from '../navbar/navbar.component';
             <small>{{ product.categoryName }}</small>
             <h2>{{ product.name }}</h2>
             <p>{{ product.shortDescription }}</p>
-            <a [routerLink]="['/catalog', product.slug]">{{
-              lang.translate('pages.catalog.viewProduct')
-            }}</a>
+            <a *ngIf="product.detailLink" [routerLink]="product.detailLink">
+              {{ lang.translate('pages.catalog.viewProduct') }}
+            </a>
           </div>
         </article>
+      </section>
+
+      <section class="empty" *ngIf="!loading() && products().length === 0">
+        <p>No catalog products found.</p>
       </section>
     </main>
     <app-footer></app-footer>
@@ -108,6 +123,19 @@ import { NavbarComponent } from '../navbar/navbar.component';
         margin-top: 24px;
       }
 
+      .empty {
+        width: min(1120px, 100%);
+        margin: 28px auto 0;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        background: var(--card-bg);
+        padding: 18px;
+      }
+
+      .empty p {
+        color: var(--text-secondary);
+      }
+
       .card {
         overflow: hidden;
         border-radius: 8px;
@@ -148,9 +176,10 @@ export class CatalogListComponent {
   private readonly categoriesApi = inject(CategoriesApiService);
   readonly lang = inject(LanguageService);
 
-  readonly products = signal<CatalogProductListItem[]>([]);
+  readonly products = signal<CatalogCard[]>([]);
   readonly categories = signal<Category[]>([]);
   readonly category = signal<string | null>(null);
+  readonly loading = signal(false);
 
   constructor() {
     effect(() => {
@@ -173,9 +202,27 @@ export class CatalogListComponent {
   }
 
   private fetchProducts(category: string | null): void {
-    this.productsApi.getPublicProducts({ category: category ?? undefined, page: 1, pageSize: 24 }).subscribe({
-      next: (response) => this.products.set(response.items ?? []),
-      error: (error) => console.error('Failed to load catalog products', error),
-    });
+    this.loading.set(true);
+    this.productsApi
+      .getPublicProducts({ category: category ?? undefined, page: 1, pageSize: 24 })
+      .subscribe({
+        next: (response) => {
+          this.products.set((response.items ?? []).map((product) => this.toCatalogCard(product)));
+          this.loading.set(false);
+        },
+        error: (error) => {
+          console.error('Failed to load catalog products', error);
+          this.products.set([]);
+          this.loading.set(false);
+        },
+      });
+  }
+
+  private toCatalogCard(product: CatalogProductListItem): CatalogCard {
+    return {
+      ...product,
+      coverImageUrl: resolveAssetUrl(product.coverImageUrl),
+      detailLink: ['/catalog', product.slug],
+    };
   }
 }

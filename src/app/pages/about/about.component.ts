@@ -22,7 +22,7 @@ import { LanguageService } from '../../core/services/language.service';
           class="bg-typography"
           [style.transform]="'translateY(-50%) translateX(' + scrollProgress * -30 + 'vw)'"
         >
-          PAS<span class="text-outline">SION</span>
+          PRO<span class="text-outline">CESS</span>
         </div>
 
         <div class="header-content" [style.opacity]="1 - scrollProgress * 5">

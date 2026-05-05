@@ -1,4 +1,12 @@
-import { Component, DestroyRef, HostListener, OnDestroy, computed, inject, signal } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  HostListener,
+  OnDestroy,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
@@ -40,74 +48,53 @@ import { filter } from 'rxjs';
         <!-- Desktop Navigation -->
         <div class="desktop-nav d-none d-lg-flex align-items-center gap-4">
           <div class="links">
-            <a routerLink="/" fragment="about" (click)="closeMenuLink($event)">
+            <a routerLink="/" fragment="about-us" (click)="closeMenuLink($event)">
               <span
                 data-edit-id="navbar.about"
                 data-edit-label="Navbar About"
                 [attr.data-edit-scope]="lang.currentLang()"
-              >{{
-                content.getNavbarLabel('about', lang.currentLang())
-              }}</span>
-            </a>
-            <a routerLink="/" fragment="products" (click)="closeMenuLink($event)">
-              <span
-                data-edit-id="navbar.products"
-                data-edit-label="Navbar Products"
-                [attr.data-edit-scope]="lang.currentLang()"
-              >{{
-                content.getNavbarLabel('products', lang.currentLang())
-              }}</span>
+                >{{ content.getNavbarLabel('about', lang.currentLang()) }}</span
+              >
             </a>
             <a routerLink="/" fragment="origins" (click)="closeMenuLink($event)">
               <span
                 data-edit-id="navbar.origins"
                 data-edit-label="Navbar Origins"
                 [attr.data-edit-scope]="lang.currentLang()"
-              >{{
-                content.getNavbarLabel('origins', lang.currentLang())
-              }}</span>
+                >{{ content.getNavbarLabel('origins', lang.currentLang()) }}</span
+              >
             </a>
-            <a
-              routerLink="/catalog"
-              (click)="closeMenuLink($event)"
+            <a routerLink="/catalog" (click)="closeMenuLink($event)"
               ><span
                 data-edit-id="navbar.catalog"
                 data-edit-label="Navbar Catalog"
                 [attr.data-edit-scope]="lang.currentLang()"
-              >{{
-                content.getNavbarLabel('catalog', lang.currentLang())
-              }}</span></a
+                >{{ content.getNavbarLabel('catalog', lang.currentLang()) }}</span
+              ></a
             >
-            <a
-              routerLink="/blog"
-              (click)="closeMenuLink($event)"
+            <a routerLink="/blog" (click)="closeMenuLink($event)"
               ><span
                 data-edit-id="navbar.blog"
                 data-edit-label="Navbar Blog"
                 [attr.data-edit-scope]="lang.currentLang()"
-              >{{
-                content.getNavbarLabel('blog', lang.currentLang())
-              }}</span></a
+                >{{ content.getNavbarLabel('blog', lang.currentLang()) }}</span
+              ></a
             >
-            <a
-              routerLink="/quote"
-              (click)="closeMenuLink($event)"
+            <a routerLink="/quote" (click)="closeMenuLink($event)"
               ><span
                 data-edit-id="navbar.quote"
                 data-edit-label="Navbar Quote"
                 [attr.data-edit-scope]="lang.currentLang()"
-              >{{
-                content.getNavbarLabel('quote', lang.currentLang())
-              }}</span></a
+                >{{ content.getNavbarLabel('quote', lang.currentLang()) }}</span
+              ></a
             >
             <a routerLink="/" fragment="contact" (click)="closeMenuLink($event)">
               <span
                 data-edit-id="navbar.contact"
                 data-edit-label="Navbar Contact"
                 [attr.data-edit-scope]="lang.currentLang()"
-              >{{
-                content.getNavbarLabel('contact', lang.currentLang())
-              }}</span>
+                >{{ content.getNavbarLabel('contact', lang.currentLang()) }}</span
+              >
             </a>
           </div>
 
@@ -161,7 +148,10 @@ import { filter } from 'rxjs';
         </div>
 
         <!-- Mobile Controls -->
-        <div class="mobile-actions d-flex d-lg-none align-items-center gap-2" data-editor-ignore="true">
+        <div
+          class="mobile-actions d-flex d-lg-none align-items-center gap-2"
+          data-editor-ignore="true"
+        >
           <button class="icon-btn" (click)="toggleTheme($event)">
             <span class="btn-icon">
               @if (theme.isDarkMode()) {
@@ -192,47 +182,35 @@ import { filter } from 'rxjs';
       <!-- Mobile Overlay Menu -->
       <div class="mobile-overlay" [class.show]="isMenuOpen()">
         <div class="overlay-links">
-          <a routerLink="/" fragment="about" (click)="closeMenuLink($event)">{{
+          <a routerLink="/" fragment="about-us" (click)="closeMenuLink($event)">{{
             content.getNavbarLabel('about', lang.currentLang())
-          }}</a>
-          <a routerLink="/" fragment="products" (click)="closeMenuLink($event)">{{
-            content.getNavbarLabel('products', lang.currentLang())
           }}</a>
           <a routerLink="/" fragment="origins" (click)="closeMenuLink($event)">{{
             content.getNavbarLabel('origins', lang.currentLang())
           }}</a>
-          <a
-            routerLink="/catalog"
-            (click)="closeMenuLink($event)"
+          <a routerLink="/catalog" (click)="closeMenuLink($event)"
             ><span
               data-edit-id="navbar.catalog"
               data-edit-label="Navbar Catalog"
               [attr.data-edit-scope]="lang.currentLang()"
-            >{{
-              content.getNavbarLabel('catalog', lang.currentLang())
-            }}</span></a
+              >{{ content.getNavbarLabel('catalog', lang.currentLang()) }}</span
+            ></a
           >
-          <a
-            routerLink="/blog"
-            (click)="closeMenuLink($event)"
+          <a routerLink="/blog" (click)="closeMenuLink($event)"
             ><span
               data-edit-id="navbar.blog"
               data-edit-label="Navbar Blog"
               [attr.data-edit-scope]="lang.currentLang()"
-            >{{
-              content.getNavbarLabel('blog', lang.currentLang())
-            }}</span></a
+              >{{ content.getNavbarLabel('blog', lang.currentLang()) }}</span
+            ></a
           >
-          <a
-            routerLink="/quote"
-            (click)="closeMenuLink($event)"
+          <a routerLink="/quote" (click)="closeMenuLink($event)"
             ><span
               data-edit-id="navbar.quote"
               data-edit-label="Navbar Quote"
               [attr.data-edit-scope]="lang.currentLang()"
-            >{{
-              content.getNavbarLabel('quote', lang.currentLang())
-            }}</span></a
+              >{{ content.getNavbarLabel('quote', lang.currentLang()) }}</span
+            ></a
           >
           <a routerLink="/" fragment="contact" (click)="closeMenuLink($event)">{{
             content.getNavbarLabel('contact', lang.currentLang())
@@ -666,10 +644,10 @@ export class NavbarComponent implements OnDestroy {
   readonly settings = inject(SiteSettingsService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
-  readonly fallbackLogo = 'assets/logo.png';
+  readonly fallbackLogo = 'assets/logo-transparent.png';
   readonly brokenLogoUrl = signal<string | null>(null);
-  readonly requestedLogoUrl = computed(
-    () => resolveAssetUrl(this.settings.getValue('brand.logo', '') || this.fallbackLogo),
+  readonly requestedLogoUrl = computed(() =>
+    resolveAssetUrl(this.settings.getValue('brand.logo', '') || this.fallbackLogo),
   );
   readonly logoUrl = computed(() =>
     this.brokenLogoUrl() === this.requestedLogoUrl() ? this.fallbackLogo : this.requestedLogoUrl(),

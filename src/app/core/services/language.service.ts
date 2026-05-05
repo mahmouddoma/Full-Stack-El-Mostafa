@@ -23,11 +23,11 @@ export class LanguageService {
 
   private translations: Record<Language, any> = {
     en: {
-      nav: { about: 'About', products: 'Products', origins: 'Origins', contact: 'Contact' },
+      nav: { about: 'About', products: 'Products', origins: 'Origins', contact: 'Request a Quote' },
       navbar: {
         catalog: 'Catalog',
         blog: 'Blog',
-        quote: 'Request Quote',
+        quote: 'Become a Supplier',
         adminLink: 'Admin Login',
       },
       hero: {
@@ -39,6 +39,15 @@ export class LanguageService {
         story: 'OUR STORY',
         journey: 'The Journey',
         scroll: 'Scroll to trace the path of perfection.',
+      },
+      aboutUs: {
+        eyebrow: 'About Us',
+        title: 'Who we are',
+        lead:
+          'El Mostafa is a Cairo-based fruit importer focused on premium tropical and fresh produce, connecting trusted global growers with Egyptian wholesalers, retailers, and hospitality partners.',
+        body:
+          'We handle sourcing, quality selection, cold-chain coordination, and daily market supply with a simple promise: consistent fruit, clear communication, and dependable delivery.',
+        points: ['Premium sourcing', 'Cold-chain handling', 'Cairo market expertise'],
       },
       about: {
         nodes: [
@@ -121,6 +130,9 @@ export class LanguageService {
         emailLabel: 'Email Address',
         emailPlaceholder: 'email@example.com',
         emailError: 'Please enter a valid email address.',
+        typeLabel: 'I am a',
+        typeSupplier: 'Supplier',
+        typeCustomer: 'Customer',
         subjectLabel: 'Subject',
         subjectPlaceholder: 'What is this about?',
         messageLabel: 'Message',
@@ -151,7 +163,7 @@ export class LanguageService {
           all: 'All',
           viewProduct: 'View product',
           back: 'Back to catalog',
-          requestQuote: 'Request quote',
+          requestQuote: 'Become a supplier',
           details: {
             origin: 'Origin',
             season: 'Season',
@@ -167,8 +179,8 @@ export class LanguageService {
           back: 'Back to blog',
         },
         quote: {
-          eyebrow: 'Request Quote',
-          title: 'Send a product inquiry',
+          eyebrow: 'Become a Supplier',
+          title: 'Send a supplier application',
           fullName: 'Full name',
           company: 'Company',
           country: 'Country',
@@ -177,10 +189,10 @@ export class LanguageService {
           quantity: 'Quantity',
           selectProduct: 'Select product',
           message: 'Message',
-          submitIdle: 'Submit quote request',
+          submitIdle: 'Submit supplier request',
           submitLoading: 'Sending...',
-          success: 'Quote request sent.',
-          error: 'Could not submit the quote request.',
+          success: 'Supplier request sent.',
+          error: 'Could not submit the supplier request.',
         },
         newsletterFlow: {
           confirmTitle: 'Newsletter confirmation',
@@ -285,6 +297,10 @@ export class LanguageService {
               title: 'Edit Website',
               description: 'Open the live preview and update visible text or images directly.',
             },
+            aboutUs: {
+              title: 'Manage About Us',
+              description: 'Update the company overview, logo area copy, and highlight chips.',
+            },
             homeProducts: {
               title: 'Manage Home Products',
               description: 'Control the featured products shown on the homepage.',
@@ -307,6 +323,12 @@ export class LanguageService {
               description:
                 'Hero, text, home products, sourcing origins, and visible brand content.',
               meta: 'Website',
+            },
+            aboutUs: {
+              title: 'About Us',
+              description:
+                'Company intro, overview paragraphs, logo image area, and highlight chips.',
+              meta: 'Home Section',
             },
             catalog: {
               title: 'Product Catalog',
@@ -656,11 +678,11 @@ export class LanguageService {
       },
     },
     ar: {
-      nav: { about: 'عنّا', products: 'منتجاتنا', origins: 'المصادر', contact: 'تواصل معنا' },
+      nav: { about: 'عنّا', products: 'منتجاتنا', origins: 'المصادر', contact: 'اطلب عرض سعر' },
       navbar: {
         catalog: 'الكتالوج',
         blog: 'المدونة',
-        quote: 'اطلب عرض سعر',
+        quote: 'كن موردا',
         adminLink: 'دخول الأدمن',
       },
       hero: {
@@ -672,6 +694,15 @@ export class LanguageService {
         story: 'قصتنا',
         journey: 'الرحلة',
         scroll: 'اسحب للأسفل لتتبع مسار المثالية.',
+      },
+      aboutUs: {
+        eyebrow: 'من نحن',
+        title: 'من نحن',
+        lead:
+          'المصطفى شركة استيراد فواكه مقرها القاهرة، متخصصة في المنتجات الاستوائية والطازجة الفاخرة، وتربط المزارعين العالميين الموثوقين بتجار الجملة والتجزئة وقطاع الضيافة في مصر.',
+        body:
+          'ندير التوريد واختيار الجودة وتنسيق سلسلة التبريد والإمداد اليومي للسوق بوعد بسيط: فاكهة ثابتة الجودة، تواصل واضح، وتسليم يعتمد عليه.',
+        points: ['توريد فاخر', 'إدارة سلسلة التبريد', 'خبرة سوق القاهرة'],
       },
       about: {
         nodes: [
@@ -784,7 +815,7 @@ export class LanguageService {
           all: 'الكل',
           viewProduct: 'عرض المنتج',
           back: 'العودة إلى الكتالوج',
-          requestQuote: 'اطلب عرض سعر',
+          requestQuote: 'كن موردا',
           details: {
             origin: 'المنشأ',
             season: 'الموسم',
@@ -800,8 +831,8 @@ export class LanguageService {
           back: 'العودة إلى المدونة',
         },
         quote: {
-          eyebrow: 'اطلب عرض سعر',
-          title: 'أرسل استفسارًا عن المنتج',
+          eyebrow: 'كن موردا',
+          title: 'أرسل طلب الانضمام كمورد',
           fullName: 'الاسم الكامل',
           company: 'الشركة',
           country: 'الدولة',
@@ -810,10 +841,10 @@ export class LanguageService {
           quantity: 'الكمية',
           selectProduct: 'اختر المنتج',
           message: 'الرسالة',
-          submitIdle: 'إرسال طلب التسعير',
+          submitIdle: 'إرسال طلب المورد',
           submitLoading: 'جارٍ الإرسال...',
-          success: 'تم إرسال طلب التسعير.',
-          error: 'تعذر إرسال طلب التسعير.',
+          success: 'تم إرسال طلب المورد.',
+          error: 'تعذر إرسال طلب المورد.',
         },
         newsletterFlow: {
           confirmTitle: 'تأكيد النشرة البريدية',
@@ -918,6 +949,10 @@ export class LanguageService {
               title: 'تعديل الموقع',
               description: 'افتح المعاينة الحية وعدل النصوص أو الصور الظاهرة مباشرة.',
             },
+            aboutUs: {
+              title: 'إدارة من نحن',
+              description: 'عدّل نبذة الشركة والنصوص ونقاط التميز في سكشن About Us.',
+            },
             homeProducts: {
               title: 'إدارة منتجات الرئيسية',
               description: 'تحكم في المنتجات المميزة التي تظهر على الصفحة الرئيسية.',
@@ -938,6 +973,11 @@ export class LanguageService {
               title: 'الصفحة الرئيسية',
               description: 'الهيرو، النصوص، منتجات الرئيسية، مصادر التوريد، ومحتوى الهوية الظاهر.',
               meta: 'الموقع',
+            },
+            aboutUs: {
+              title: 'من نحن',
+              description: 'نبذة الشركة، الفقرات الرئيسية، منطقة اللوجو، ونقاط التميز.',
+              meta: 'سكشن رئيسي',
             },
             catalog: {
               title: 'كتالوج المنتجات',
@@ -1335,11 +1375,11 @@ export class LanguageService {
 
       // If found in remote and it is a LocalizedText object (has the lang key)
       if (val && val[lang]) {
-        return repairText(val[lang]);
+        return this.normalizeRenamedCopy(path, repairText(val[lang]));
       }
       // If it's a direct string (like email/phone in footer)
       if (typeof val === 'string') {
-        return repairText(val);
+        return this.normalizeRenamedCopy(path, repairText(val));
       }
     }
 
@@ -1356,7 +1396,7 @@ export class LanguageService {
       }
     }
 
-    return repairDeepText(value ?? path);
+    return this.normalizeRenamedCopy(path, repairDeepText(value ?? path));
   }
 
   translate(path: string): any {
@@ -1366,5 +1406,23 @@ export class LanguageService {
   translateEditable(nodeId: string, translationPath?: string): string {
     const lang = this.currentLang();
     return repairText(this.translateFor(lang, translationPath ?? nodeId));
+  }
+
+  private normalizeRenamedCopy(path: string, value: any): any {
+    if (typeof value !== 'string') {
+      return value;
+    }
+
+    if (
+      path === 'navbar.quote' ||
+      path === 'pages.catalog.requestQuote' ||
+      path === 'pages.quote.eyebrow'
+    ) {
+      return value.replace(/request\s+(a\s+)?quote|quote request/gi, (match) =>
+        match === match.toUpperCase() ? 'BECOME A SUPPLIER' : 'Become a supplier',
+      );
+    }
+
+    return value;
   }
 }

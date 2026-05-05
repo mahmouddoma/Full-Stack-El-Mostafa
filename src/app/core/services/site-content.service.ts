@@ -44,8 +44,8 @@ const DEFAULT_CONTENT: LocalizedSiteContent = {
     origins: { en: 'Origins', ar: 'المصادر' },
     catalog: { en: 'Catalog', ar: 'الكتالوج' },
     blog: { en: 'Blog', ar: 'المدونة' },
-    quote: { en: 'Request Quote', ar: 'اطلب عرض سعر' },
-    contact: { en: 'Contact', ar: 'تواصل معنا' },
+    quote: { en: 'Become a Supplier', ar: 'كن موردا' },
+    contact: { en: 'Request a Quote', ar: 'اطلب عرض سعر' },
     adminLink: { en: 'Admin Login', ar: 'دخول الأدمن' },
   },
   hero: {
@@ -91,7 +91,7 @@ export class SiteContentService {
   }
 
   getNavbarLabel(key: keyof LocalizedSiteContent['navbar'], locale: EditableLocale): string {
-    return repairText(this.content().navbar[key][locale]);
+    return this.normalizeNavbarLabel(key, locale, repairText(this.content().navbar[key][locale]));
   }
 
   getHeroValue(key: keyof LocalizedSiteContent['hero'], locale: EditableLocale): string {
@@ -244,6 +244,34 @@ export class SiteContentService {
   private mergeString(fallback: string, value?: string | null): string {
     const normalized = String(value ?? '').trim();
     return normalized ? value as string : fallback;
+  }
+
+  private normalizeNavbarLabel(
+    key: keyof LocalizedSiteContent['navbar'],
+    locale: EditableLocale,
+    value: string,
+  ): string {
+    if (key !== 'quote') {
+      if (key === 'contact') {
+        return this.normalizeContactLabel(locale, value);
+      }
+
+      return value;
+    }
+
+    if (locale === 'ar' && /عرض\s*سعر|التسعير/.test(value)) {
+      return 'كن موردا';
+    }
+
+    return value.replace(/request\s+(a\s+)?quote/gi, 'Become a Supplier');
+  }
+
+  private normalizeContactLabel(locale: EditableLocale, value: string): string {
+    if (locale === 'ar' && /تواصل|contact/i.test(value)) {
+      return 'اطلب عرض سعر';
+    }
+
+    return value.replace(/^contact$/i, 'Request a Quote');
   }
 
   private loadContent(): LocalizedSiteContent {

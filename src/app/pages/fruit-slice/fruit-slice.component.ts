@@ -13,6 +13,7 @@ import { LanguageService } from '../../core/services/language.service';
 interface Particle {
   id: number;
   type: 'juice' | 'leaf';
+  imgSrc: string;
   angle: number;
   velocity: number;
   rotation: number;
@@ -31,7 +32,7 @@ interface Particle {
   standalone: true,
   imports: [CommonModule],
   template: `
-    <section class="slice-section" #sliceSection>
+    <section class="slice-section" id="process" #sliceSection>
       <div class="sticky-container">
         <!-- Shockwave Glow -->
         <div
@@ -92,9 +93,9 @@ interface Particle {
               "
             >
               <img
-                src="assets/real-orange.png"
+                [src]="sliceFruitSrc"
                 class="fruit-visual"
-                alt="Real Orange Top"
+                alt="Pineapple top half"
                 data-edit-id="slice.image.top"
                 data-edit-label="Slice Top Image"
                 data-edit-type="image"
@@ -116,9 +117,9 @@ interface Particle {
               "
             >
               <img
-                src="assets/real-orange.png"
+                [src]="sliceFruitSrc"
                 class="fruit-visual bottom-visual"
-                alt="Real Orange Bottom"
+                alt="Pineapple bottom half"
                 data-edit-id="slice.image.bottom"
                 data-edit-label="Slice Bottom Image"
                 data-edit-type="image"
@@ -149,12 +150,7 @@ interface Particle {
           [style.filter]="'contrast(1.18) saturate(1.12) brightness(1.04)'"
           [style.opacity]="p.currentOpacity"
         >
-          <img
-            [src]="p.type === 'juice' ? 'assets/real-splash.png' : 'assets/real-leaf.png'"
-            alt="Particle"
-            loading="lazy"
-            decoding="async"
-          />
+          <img [src]="p.imgSrc" alt="" loading="lazy" decoding="async" aria-hidden="true" />
         </div>
       </div>
     </section>
@@ -264,7 +260,7 @@ interface Particle {
       .fruit-visual {
         width: 350px;
         height: 350px;
-        object-fit: cover;
+        object-fit: contain;
         position: absolute;
       }
       .fruit-top .fruit-visual {
@@ -287,13 +283,17 @@ interface Particle {
         image-rendering: auto;
         transform: translateZ(0);
       }
+
       .particle.juice img {
-        width: 140px;
-        height: 140px;
+        width: 150px;
+        height: 150px;
+        filter: hue-rotate(18deg) saturate(1.08) brightness(1.05);
       }
+
       .particle.leaf img {
-        width: 60px;
-        height: 60px;
+        width: 62px;
+        height: 62px;
+        filter: hue-rotate(36deg) saturate(1.2) brightness(0.95);
       }
     `,
   ],
@@ -302,6 +302,7 @@ export class FruitSliceComponent implements OnInit, AfterViewInit {
   @ViewChild('sliceSection') section!: ElementRef<HTMLElement>;
   lang = inject(LanguageService);
   readonly sliceTitle = () => this.normalizeLegacyLineBreaks(this.lang.translate('slice.title'));
+  readonly sliceFruitSrc = 'assets/real-pineapple-cutout.png';
 
   // Fruit 2D Translation vars
   topTranslateY = 0;
@@ -331,15 +332,16 @@ export class FruitSliceComponent implements OnInit, AfterViewInit {
   }
 
   initParticles() {
-    for (let i = 0; i < 15; i++) {
-      const isJuice = Math.random() > 0.35;
+    for (let i = 0; i < 13; i++) {
+      const type: Particle['type'] = Math.random() > 0.28 ? 'juice' : 'leaf';
       this.particles.push({
         id: i,
-        type: isJuice ? 'juice' : 'leaf',
+        type,
+        imgSrc: type === 'juice' ? 'assets/real-splash.png' : 'assets/real-leaf.png',
         angle: Math.random() * Math.PI * 2, // 360 spread
-        velocity: 150 + Math.random() * 450, // Travel distance radius
+        velocity: type === 'juice' ? 120 + Math.random() * 380 : 180 + Math.random() * 420,
         rotation: -200 + Math.random() * 400, // Spin
-        scaleMult: isJuice ? 0.8 + Math.random() * 1.0 : 0.6 + Math.random() * 0.8,
+        scaleMult: type === 'juice' ? 0.65 + Math.random() * 0.85 : 0.45 + Math.random() * 0.55,
         zDepth: Math.random(), // Generates blur
         currentX: 0,
         currentY: 0,
@@ -352,7 +354,6 @@ export class FruitSliceComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    // Small timeout to ensure layout has calculated especially after images/fonts load
     setTimeout(() => {
       this.updateBounds();
     }, 500);

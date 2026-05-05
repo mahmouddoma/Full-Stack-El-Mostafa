@@ -1,11 +1,13 @@
 import { Component, HostListener, OnInit, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { AnimationService } from '../../core/services/animation.service';
 import { LanguageService } from '../../core/services/language.service';
 import { SiteContentService } from '../../core/services/site-content.service';
 
 interface FloatingFruit {
   imgSrc: string;
+  label: string;
   left: string;
   top: string;
   duration: string;
@@ -44,13 +46,12 @@ interface FloatingFruit {
             [src]="fruit.imgSrc"
             class="real-fruit"
             [attr.data-edit-id]="'hero.fruit.' + i"
-            [attr.data-edit-label]="'Hero Floating Fruit ' + (i + 1)"
+            [attr.data-edit-label]="'Hero Floating ' + fruit.label"
             data-edit-type="image"
             data-edit-scope="global"
             alt=""
-            [attr.loading]="i < 2 ? 'eager' : 'lazy'"
+            loading="lazy"
             decoding="async"
-            [attr.fetchpriority]="i === 0 ? 'high' : null"
             aria-hidden="true"
           />
         </div>
@@ -400,6 +401,7 @@ interface FloatingFruit {
 export class HeroComponent implements OnInit {
   floatingFruits: FloatingFruit[] = [];
   private animationService = inject(AnimationService);
+  private readonly router = inject(Router);
   lang = inject(LanguageService);
   content = inject(SiteContentService);
 
@@ -419,17 +421,19 @@ export class HeroComponent implements OnInit {
   ngOnInit() {
     this.floatingFruits = [
       {
-        imgSrc: 'assets/real-strawberry.png',
-        left: '27%',
-        top: '22%',
+        imgSrc: 'assets/real-apple.png',
+        label: 'Red apple',
+        left: '16%',
+        top: '18%',
         duration: '9s',
         delay: '-1s',
         speedMultiplier: 0.22,
         translateY: 0,
-        size: 'clamp(100px, 7vw, 135px)',
+        size: 'clamp(90px, 6.5vw, 130px)',
       },
       {
         imgSrc: 'assets/real-kiwi.png',
+        label: 'Kiwi',
         left: '86%',
         top: '15%',
         duration: '10s',
@@ -439,34 +443,37 @@ export class HeroComponent implements OnInit {
         size: 'clamp(78px, 5.5vw, 108px)',
       },
       {
-        imgSrc: 'assets/real-orange.png',
-        left: '24%',
+        imgSrc: 'assets/real-banana-cutout.png',
+        label: 'Bananas',
+        left: '19%',
         top: '68%',
         duration: '8.5s',
         delay: '-0.5s',
         speedMultiplier: 0.28,
         translateY: 0,
-        size: 'clamp(95px, 6.8vw, 125px)',
+        size: 'clamp(115px, 8vw, 165px)',
       },
       {
-        imgSrc: 'assets/real-orange.png',
-        left: '75%',
-        top: '62%',
+        imgSrc: 'assets/real-avocado-cutout.png',
+        label: 'Avocado',
+        left: '76%',
+        top: '60%',
         duration: '9.5s',
         delay: '-1.5s',
         speedMultiplier: 0.2,
         translateY: 0,
-        size: 'clamp(110px, 7.5vw, 145px)',
+        size: 'clamp(95px, 6.8vw, 135px)',
       },
       {
-        imgSrc: 'assets/real-kiwi.png',
-        left: '82%',
-        top: '71%',
+        imgSrc: 'assets/real-pineapple-cutout.png',
+        label: 'Pineapple',
+        left: '62%',
+        top: '76%',
         duration: '11s',
         delay: '-3s',
         speedMultiplier: 0.24,
         translateY: 0,
-        size: 'clamp(125px, 8.5vw, 170px)',
+        size: 'clamp(120px, 8vw, 170px)',
       },
     ];
   }
@@ -492,6 +499,6 @@ export class HeroComponent implements OnInit {
   }
 
   scrollToProducts() {
-    document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' });
+    this.router.navigateByUrl('/catalog');
   }
 }

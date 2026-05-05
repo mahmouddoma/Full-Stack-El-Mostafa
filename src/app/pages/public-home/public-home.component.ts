@@ -13,10 +13,10 @@ import { ActivatedRoute } from '@angular/router';
 
 import { NavbarComponent } from '../navbar/navbar.component';
 import { HeroComponent } from '../hero/hero.component';
+import { AboutUsComponent } from '../about-us/about-us.component';
 import { FruitSliceComponent } from '../fruit-slice/fruit-slice.component';
 import { MarqueeComponent } from '../../shared/components/marquee/marquee.component';
 import { AboutComponent } from '../about/about.component';
-import { ProductsComponent } from '../products/products.component';
 import { OriginsComponent } from '../origins/origins.component';
 import { WhyUsComponent } from '../../shared/components/why-us/why-us.component';
 import { PublicDataSectionsComponent } from '../public-data-sections/public-data-sections.component';
@@ -32,10 +32,10 @@ import { SiteContentService } from '../../core/services/site-content.service';
     CommonModule,
     NavbarComponent,
     HeroComponent,
+    AboutUsComponent,
     FruitSliceComponent,
     MarqueeComponent,
     AboutComponent,
-    ProductsComponent,
     OriginsComponent,
     WhyUsComponent,
     // PublicDataSectionsComponent,
@@ -46,10 +46,10 @@ import { SiteContentService } from '../../core/services/site-content.service';
     <app-navbar></app-navbar>
     <main>
       <app-hero></app-hero>
+      <app-about-us></app-about-us>
       <app-fruit-slice></app-fruit-slice>
       <app-marquee></app-marquee>
       <app-about></app-about>
-      <app-products></app-products>
       <app-origins></app-origins>
       <app-why-us></app-why-us>
       <!-- <app-public-data-sections></app-public-data-sections> -->
@@ -59,9 +59,22 @@ import { SiteContentService } from '../../core/services/site-content.service';
   `,
 })
 export class PublicHomeComponent implements AfterViewInit, OnDestroy {
+  private readonly SECTION_STORAGE_KEY = 'elmostafa_last_public_section';
+  private readonly scrollSectionIds = [
+    'home',
+    'about-us',
+    'process',
+    'about',
+    'origins',
+    'why-us',
+    'contact',
+  ];
   private isBrowser: boolean;
   private selectedEditorElement: HTMLElement | null = null;
   private isRefreshQueued = false;
+  private initialScrollHandled = false;
+  private isRestoringScroll = false;
+  private scrollMemoryTimer: number | null = null;
   private readonly windowFocusHandler = () => {
     this.refreshPublicContent();
   };
@@ -85,6 +98,11 @@ export class PublicHomeComponent implements AfterViewInit, OnDestroy {
     private readonly siteContent: SiteContentService,
   ) {
     this.isBrowser = isPlatformBrowser(platformId);
+
+    if (this.isBrowser) {
+      history.scrollRestoration = 'manual';
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }
 
     effect(() => {
       const locale = this.languageService.currentLang();
@@ -118,13 +136,11 @@ export class PublicHomeComponent implements AfterViewInit, OnDestroy {
     });
 
     this.route.fragment.subscribe((fragment) => {
-      if (!fragment || !this.isBrowser) {
+      if (!this.isBrowser) {
         return;
       }
 
-      setTimeout(() => {
-        document.getElementById(fragment)?.scrollIntoView({ behavior: 'smooth' });
-      }, 120);
+      this.scheduleInitialScroll(fragment);
     });
 
     if (this.isBrowser) {
@@ -143,7 +159,101 @@ export class PublicHomeComponent implements AfterViewInit, OnDestroy {
       document.removeEventListener('submit', this.editorCaptureSubmitHandler, true);
       window.removeEventListener('focus', this.windowFocusHandler);
       document.removeEventListener('visibilitychange', this.visibilityChangeHandler);
+      if (this.scrollMemoryTimer !== null) {
+        window.clearTimeout(this.scrollMemoryTimer);
+      }
     }
+  }
+
+  private scheduleInitialScroll(fragment: string | null): void {
+    if (fragment) {
+      this.scrollToSavedSection(fragment, 'smooth');
+      return;
+    }
+
+    if (this.initialScrollHandled) {
+      return;
+    }
+
+    this.initialScrollHandled = true;
+    const targetId = this.getStoredSectionId() ?? 'home';
+
+    this.scrollToSavedSection(targetId, 'auto');
+    window.setTimeout(() => this.scrollToSavedSection(targetId, 'auto'), 650);
+  }
+
+  private scrollToSavedSection(sectionId: string, behavior: ScrollBehavior): void {
+    const target = document.getElementById(sectionId) ?? document.getElementById('home');
+
+    if (!target) {
+      window.scrollTo({ top: 0, left: 0, behavior });
+      return;
+    }
+
+    this.isRestoringScroll = true;
+    target.scrollIntoView({ behavior, block: 'start' });
+
+    window.setTimeout(() => {
+      this.isRestoringScroll = false;
+      this.rememberCurrentSection();
+    }, behavior === 'smooth' ? 850 : 120);
+  }
+
+  private getStoredSectionId(): string | null {
+    const value = sessionStorage.getItem(this.SECTION_STORAGE_KEY);
+    return value && this.scrollSectionIds.includes(value) ? value : null;
+  }
+
+  private rememberCurrentSection(): void {
+    if (!this.isBrowser || this.isRestoringScroll) {
+      return;
+    }
+
+    const activeSection = this.findActiveSectionId();
+    if (activeSection) {
+      sessionStorage.setItem(this.SECTION_STORAGE_KEY, activeSection);
+    }
+  }
+
+  private queueSectionMemoryUpdate(): void {
+    if (!this.isBrowser || this.isRestoringScroll) {
+      return;
+    }
+
+    if (this.scrollMemoryTimer !== null) {
+      window.clearTimeout(this.scrollMemoryTimer);
+    }
+
+    this.scrollMemoryTimer = window.setTimeout(() => {
+      this.scrollMemoryTimer = null;
+      this.rememberCurrentSection();
+    }, 120);
+  }
+
+  private findActiveSectionId(): string | null {
+    const anchorY = window.innerHeight * 0.42;
+    let closest: { id: string; distance: number } | null = null;
+
+    for (const id of this.scrollSectionIds) {
+      const element = document.getElementById(id);
+
+      if (!element) {
+        continue;
+      }
+
+      const rect = element.getBoundingClientRect();
+
+      if (rect.top <= anchorY && rect.bottom >= anchorY) {
+        return id;
+      }
+
+      const distance = Math.min(Math.abs(rect.top - anchorY), Math.abs(rect.bottom - anchorY));
+      if (!closest || distance < closest.distance) {
+        closest = { id, distance };
+      }
+    }
+
+    return closest?.id ?? null;
   }
 
   private refreshPublicContent(): void {
@@ -320,6 +430,7 @@ export class PublicHomeComponent implements AfterViewInit, OnDestroy {
       const maxScroll = document.body.scrollHeight - window.innerHeight;
       const progress = maxScroll > 0 ? window.scrollY / maxScroll : 0;
       document.body.style.setProperty('--scroll-progress', `${progress}`);
+      this.queueSectionMemoryUpdate();
     }
   }
 }

@@ -359,6 +359,56 @@ export class AdminSiteContentComponent implements OnInit {
       ],
     },
     {
+      title: 'About Us Section',
+      description: 'Company overview copy, main description, and the three highlight chips.',
+      fields: [
+        {
+          nodeId: 'aboutUs.eyebrow',
+          label: 'About Us Eyebrow',
+          mode: 'visual-override',
+          translationPath: 'aboutUs.eyebrow',
+        },
+        {
+          nodeId: 'aboutUs.title',
+          label: 'About Us Title',
+          mode: 'visual-override',
+          translationPath: 'aboutUs.title',
+        },
+        {
+          nodeId: 'aboutUs.lead',
+          label: 'About Us Lead',
+          mode: 'visual-override',
+          translationPath: 'aboutUs.lead',
+          multiline: true,
+        },
+        {
+          nodeId: 'aboutUs.body',
+          label: 'About Us Body',
+          mode: 'visual-override',
+          translationPath: 'aboutUs.body',
+          multiline: true,
+        },
+        {
+          nodeId: 'aboutUs.point.0',
+          label: 'About Us Point 1',
+          mode: 'visual-override',
+          translationPath: 'aboutUs.points.0',
+        },
+        {
+          nodeId: 'aboutUs.point.1',
+          label: 'About Us Point 2',
+          mode: 'visual-override',
+          translationPath: 'aboutUs.points.1',
+        },
+        {
+          nodeId: 'aboutUs.point.2',
+          label: 'About Us Point 3',
+          mode: 'visual-override',
+          translationPath: 'aboutUs.points.2',
+        },
+      ],
+    },
+    {
       title: 'Story Timeline',
       description: 'Narrative copy for the journey section and its three nodes.',
       fields: [

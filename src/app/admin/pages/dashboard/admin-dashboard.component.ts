@@ -314,13 +314,20 @@ export class AdminDashboardComponent implements OnInit {
       primary: true,
     },
     {
+      title: this.lang.translate('admin.dashboard.primaryActions.aboutUs.title'),
+      description: this.lang.translate('admin.dashboard.primaryActions.aboutUs.description'),
+      route: '/admin/site-content',
+    },
+    {
       title: this.lang.translate('admin.dashboard.primaryActions.homeProducts.title'),
       description: this.lang.translate('admin.dashboard.primaryActions.homeProducts.description'),
       route: '/admin/showcase',
     },
     {
       title: this.lang.translate('admin.dashboard.primaryActions.catalogProducts.title'),
-      description: this.lang.translate('admin.dashboard.primaryActions.catalogProducts.description'),
+      description: this.lang.translate(
+        'admin.dashboard.primaryActions.catalogProducts.description',
+      ),
       route: '/admin/catalog-products',
     },
     {
@@ -336,6 +343,12 @@ export class AdminDashboardComponent implements OnInit {
       description: this.lang.translate('admin.dashboard.websiteAreas.homepage.description'),
       route: '/admin/visual-editor',
       meta: this.lang.translate('admin.dashboard.websiteAreas.homepage.meta'),
+    },
+    {
+      title: this.lang.translate('admin.dashboard.websiteAreas.aboutUs.title'),
+      description: this.lang.translate('admin.dashboard.websiteAreas.aboutUs.description'),
+      route: '/admin/site-content',
+      meta: this.lang.translate('admin.dashboard.websiteAreas.aboutUs.meta'),
     },
     {
       title: this.lang.translate('admin.dashboard.websiteAreas.catalog.title'),

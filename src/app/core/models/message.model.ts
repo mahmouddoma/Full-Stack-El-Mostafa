@@ -1,6 +1,7 @@
 export interface ContactMessagePayload {
   name: string;
   email: string;
+  contactType?: 'supplier' | 'customer';
   subject: string;
   message: string;
 }
@@ -19,4 +20,3 @@ export interface AdminMessage {
   status: string;
   createdAt: string;
 }
-
